@@ -2,7 +2,7 @@
 # Create initial Slack dashboard message
 # ============================
 
-$BaseDir = "C:\rdp-status"
+$BaseDir = $PSScriptRoot
 $ConfigFile = Join-Path $BaseDir "config.ps1"
 $TSFile     = Join-Path $BaseDir "message_ts.txt"
 
