@@ -71,14 +71,14 @@ if ($TRACK_RDP) {
             $State.LastRDPRecordId = $Event.RecordId
 
             switch ($Event.Id) {
-                25 { $RDPStatus = "Connected" }
-                24 { $RDPStatus = "Disconnected" }
+                25 { $RDPStatus = "In Use :red_circle:" }
+                24 { $RDPStatus = "Available :green_circle:" }
             }
 
             $State.RDPState = $RDPStatus
         }
     } catch {
-        $RDPStatus = "Unavailable"
+        $RDPStatus = "Error :large_yellow_circle:"
     }
 }
 
