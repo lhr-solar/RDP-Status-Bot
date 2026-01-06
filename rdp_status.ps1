@@ -73,6 +73,7 @@ if ($TRACK_RDP) {
             switch ($Event.Id) {
                 25 { $RDPStatus = "In Use :red_circle:" }
                 24 { $RDPStatus = "Available :large_green_circle:" }
+                default { $RDPStatus = "Other event ($($Event.Id)) :large_yellow_circle:"
             }
 
             $State.RDPState = $RDPStatus
