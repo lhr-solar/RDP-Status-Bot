@@ -2,7 +2,7 @@
 # RDP Status Dashboard Script
 # ============================
 
-$BaseDir = $PSScriptRoot
+$BaseDir   = $PSScriptRoot
 $ConfigFile = Join-Path $BaseDir "config.ps1"
 $StateFile  = Join-Path $BaseDir "state.json"
 
@@ -21,8 +21,9 @@ if (Test-Path $StateFile) {
     $State = Get-Content $StateFile | ConvertFrom-Json
 } else {
     $State = @{
-        LastBoot = ""
-        RDPState = "Unknown"
+        LastBoot        = ""
+        RDPState        = "Unknown"
+        LastRDPRecordId = 0
     }
 }
 
@@ -39,7 +40,6 @@ if ($SHOW_LOCAL_IPS -and $IP_ADAPTERS) {
                Select-Object -ExpandProperty IPAddress
         if ($ips) { $LocalIPs += $ips }
     }
-
     $LocalIPText = if ($LocalIPs) { $LocalIPs -join ", " } else { "None" }
 }
 
@@ -57,7 +57,7 @@ if ($State.LastBoot -ne $LastBoot.ToString()) {
 }
 
 # ----------------------------
-# RDP tracking
+# RDP tracking (PROVEN METHOD)
 # ----------------------------
 $RDPStatus = $State.RDPState
 
@@ -67,12 +67,16 @@ if ($TRACK_RDP) {
             -LogName "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational" `
             -MaxEvents 1
 
-        switch ($Event.Id) {
-            21 { $RDPStatus = "Connected" }
-            24 { $RDPStatus = "Disconnected" }
-        }
+        if ($Event.RecordId -ne $State.LastRDPRecordId) {
+            $State.LastRDPRecordId = $Event.RecordId
 
-        $State.RDPState = $RDPStatus
+            switch ($Event.Id) {
+                25 { $RDPStatus = "Connected" }
+                24 { $RDPStatus = "Disconnected" }
+            }
+
+            $State.RDPState = $RDPStatus
+        }
     } catch {
         $RDPStatus = "Unavailable"
     }
@@ -84,7 +88,7 @@ if ($TRACK_RDP) {
 $State | ConvertTo-Json | Set-Content $StateFile -Encoding UTF8
 
 # ----------------------------
-# Build Slack message safely
+# Build Slack message
 # ----------------------------
 $Lines = @()
 $Lines += ("*:desktop_computer: {0}*" -f $PC_NAME)
