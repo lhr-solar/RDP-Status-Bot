@@ -25,7 +25,7 @@ while (-not [Console]::KeyAvailable) {
             Write-Host "User       : $($Event.Properties[0].Value)"
 
             switch ($Event.Id) {
-                21 { Write-Host "RDP State  : CONNECTED" -ForegroundColor Green }
+                25 { Write-Host "RDP State  : CONNECTED" -ForegroundColor Green }
                 24 { Write-Host "RDP State  : DISCONNECTED" -ForegroundColor Yellow }
                 default {
                     Write-Host "RDP State  : Other event ($($Event.Id))"
