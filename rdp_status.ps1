@@ -13,6 +13,7 @@ if (!(Test-Path $ConfigFile)) {
 
 # Load config
 . $ConfigFile
+$RunAsUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 
 # ----------------------------
 # Load or initialize state
@@ -92,6 +93,7 @@ $State | ConvertTo-Json | Set-Content $StateFile -Encoding UTF8
 # ----------------------------
 $Lines = @()
 $Lines += ("*:desktop_computer: {0}*" -f $PC_NAME)
+$Lines += ("*Run As:* {0}" -f $RunAsUser)
 $Lines += ""
 $Lines += ("*Local IP(s):* {0}" -f $LocalIPText)
 $Lines += ""
